@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Conoce el computador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E6F4FB; --card:#FFFFFF; --ink:#1F2A44; --soft:#4F5B78;
+  --accent:#7B5CD6; --sun:#FFC93C; --leaf:#3DBE7A; --tomato:#FF6B5B;
+  --wall:#CFEAF6; --floor:#EBD9B4; --tint:#F1F8FC;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#142033; --card:#1E2D47; --ink:#F1F5FF; --soft:#B9C4DD;
+    --wall:#26405F; --floor:#3A3326; --tint:#18263D;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#142033; --card:#1E2D47; --ink:#F1F5FF; --soft:#B9C4DD;
+  --wall:#26405F; --floor:#3A3326; --tint:#18263D;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Andika","Comic Sans MS","Trebuchet MS",system-ui,sans-serif; font-size:22px; line-height:1.45}
+.wrap{max-width:1240px; margin:0 auto; padding:16px 16px 36px}
+header{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px}
+h1{font-size:clamp(32px,4.6vw,52px); line-height:1.05; margin:0; letter-spacing:-.5px}
+h1 span{display:inline-block}
+.tools{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+.tab,.btn{font:inherit; font-weight:700; font-size:21px; cursor:pointer; border:4px solid var(--ink);
+  background:var(--card); color:var(--ink); padding:10px 18px; border-radius:999px; min-height:58px}
+.btn{border-radius:18px; background:var(--leaf); color:#10311F; font-size:22px; min-height:62px; padding:12px 22px}
+.btn.alt{background:var(--card); color:var(--ink)}
+.btn.sun{background:var(--sun); color:#1F2A44}
+.starcount{font-weight:700; font-size:24px; background:var(--sun); color:#1F2A44; border:4px solid var(--ink); border-radius:999px; padding:8px 18px}
+button:focus-visible,input:focus-visible,.part:focus-visible{outline:4px dashed var(--accent); outline-offset:3px}
+button:disabled{opacity:.45; cursor:default}
+
+main{display:grid; gap:18px; align-items:start}
+main.withscene{grid-template-columns:1.6fr 1fr}
+main.full{grid-template-columns:1fr}
+main.full .scene{display:none}
+@media (max-width:920px){ main.withscene{grid-template-columns:1fr} }
+
+.scene{background:var(--card); border:4px solid var(--ink); border-radius:28px; overflow:hidden}
+.caption{font-weight:700; font-size:24px; padding:10px 18px; border-bottom:4px solid var(--ink); background:var(--tint)}
+.scene svg{display:block; width:100%; height:auto; max-width:100%}
+.wall{fill:var(--wall)} .floor{fill:var(--floor)}
+
+.part{cursor:pointer}
+.part .body{transform-box:fill-box; transform-origin:50% 100%}
+.part .halo{opacity:0; transition:opacity .15s}
+.part:hover .halo,.part:focus-visible .halo{opacity:.55}
+.part.sel .halo{opacity:1}
+.part.sel .body{animation:hop .55s ease}
+.part.no .body{animation:shake .45s ease}
+.part .check{opacity:0; transition:opacity .2s}
+.part.seen .check{opacity:1}
+@keyframes hop{0%{transform:translateY(0)}35%{transform:translateY(-16px) scale(1.04)}65%{transform:translateY(0)}82%{transform:translateY(-5px)}100%{transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-7px)}80%{transform:translateX(7px)}}
+.eye{transform-box:fill-box; transform-origin:center; animation:blink 5s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+
+.panel{background:var(--card); border:4px solid var(--ink); border-radius:28px; padding:22px; min-height:380px}
+.emoji{font-size:80px; line-height:1; margin-bottom:6px}
+.pname{font-size:clamp(38px,4.8vw,54px); line-height:1.05; margin:0 0 10px; font-weight:700}
+.say{font-size:26px; margin:0 0 14px}
+.care{background:var(--tint); border-radius:18px; padding:12px 16px; margin:0 0 16px; color:var(--soft); font-size:21px}
+.care b{color:var(--ink)}
+.row{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+.hint{font-size:26px; margin:0 0 8px}
+.small{font-size:19px; color:var(--soft); margin:0 0 6px}
+.progress{display:flex; gap:8px; margin-top:18px; flex-wrap:wrap; align-items:center; color:var(--soft); font-size:19px}
+.dot{width:30px; height:30px; border-radius:50%; border:3px solid var(--ink); display:grid; place-items:center; font-size:16px; color:#10311F}
+.dot.on{background:var(--leaf)}
+.target{font-size:clamp(40px,5.6vw,60px); font-weight:700; line-height:1.08; margin:4px 0 12px}
+.riddle{font-size:clamp(28px,3.4vw,36px); font-weight:700; line-height:1.25; margin:4px 0 12px}
+.where{display:inline-block; background:var(--tint); border-radius:999px; padding:4px 14px; font-size:20px; margin-bottom:6px}
+.stars{font-size:34px; letter-spacing:3px; min-height:48px; margin:8px 0 12px; word-break:break-all}
+.feedback{font-size:25px; min-height:38px; margin:0 0 14px; font-weight:700}
+.feedback.good{color:#23874F} .feedback.try{color:#C94A3D}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .feedback.good{color:#6FE0A4} :root:not([data-theme="light"]) .feedback.try{color:#FF9C90} }
+
+/* mapa de misiones */
+.maphead{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:end; gap:10px; margin-bottom:14px}
+.maphead h2{font-size:clamp(34px,4.4vw,48px); margin:0; line-height:1.05}
+.missions{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:14px}
+.mcard{font:inherit; color:var(--ink); text-align:left; cursor:pointer; background:var(--tint);
+  border:4px solid var(--ink); border-radius:24px; padding:14px 16px; display:grid; grid-template-columns:auto 1fr; gap:4px 12px; align-items:center; min-height:130px}
+.mcard .num{grid-row:span 3; width:54px; height:54px; border-radius:50%; background:var(--card); border:4px solid var(--ink); display:grid; place-items:center; font-weight:700; font-size:26px}
+.mcard .me{font-size:34px; line-height:1}
+.mcard .mt{font-weight:700; font-size:22px; line-height:1.2}
+.mcard .ms{font-size:18px; color:var(--soft)}
+.mcard.done{background:#DDF5E8} .mcard.done .num{background:var(--leaf); color:#10311F}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .mcard.done{background:#1D3B33} }
+.mcard.next{border-color:var(--accent); box-shadow:0 0 0 5px var(--sun)}
+.mcard.locked{opacity:.6; cursor:default}
+.mcard.prize{background:#FFF1C2} .mcard.prize .num{background:var(--sun); color:#1F2A44}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .mcard.prize{background:#3A3420} }
+.reset{margin-top:18px; font:inherit; font-size:17px; background:none; border:none; color:var(--soft); text-decoration:underline; cursor:pointer; padding:8px}
+
+/* preguntas con opciones */
+.qcard{text-align:center; max-width:880px; margin:0 auto}
+.qemoji{font-size:96px; line-height:1}
+.qtext{font-size:clamp(30px,4vw,44px); font-weight:700; line-height:1.2; margin:8px 0 18px}
+.choices{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-bottom:16px}
+.choice{font:inherit; font-weight:700; font-size:24px; cursor:pointer; color:var(--ink); background:var(--tint);
+  border:4px solid var(--ink); border-radius:24px; padding:14px; min-height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px}
+.choice .ce{font-size:60px; line-height:1}
+.choice.right{background:var(--leaf); color:#10311F}
+.choice.wrong{animation:shake .45s ease}
+.why{font-size:24px; margin:0 0 14px}
+
+/* diploma */
+.diploma{max-width:760px; margin:18px auto 0; text-align:center; background:#FFFDF4; color:#1F2A44;
+  border:10px double #D9A21E; border-radius:24px; padding:26px 22px}
+.diploma .big{font-size:clamp(34px,5vw,52px); font-weight:700; line-height:1.1; margin:4px 0}
+.diploma .nm{font-size:clamp(34px,5vw,50px); font-weight:700; color:#6A4BC4; border-bottom:4px solid #1F2A44; display:inline-block; min-width:60%; padding:0 10px; margin:8px 0 12px}
+.namebox{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center}
+.namebox input{font:inherit; font-size:28px; padding:10px 16px; border:4px solid var(--ink); border-radius:16px; width:min(420px,100%); background:var(--card); color:var(--ink)}
+
+.confetti{position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:5}
+.confetti i{position:absolute; top:-30px; width:14px; height:20px; border-radius:4px; animation:fall 1.8s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+@media (prefers-reduced-motion: reduce){
+  .part.sel .body,.part.no .body,.eye,.choice.wrong{animation:none}
+  .confetti{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span>Conoce</span> <span>el computador</span></h1>
+    <div class="tools">
+      <span class="starcount" id="starcount" aria-label="Estrellas">⭐ 0</span>
+      <button class="tab" id="bMap">🗺️ Misiones</button>
+      <button class="tab" id="bSound" aria-pressed="true">🔊 Sonido: sí</button>
+    </div>
+  </header>
+
+  <main id="main" class="full">
+    <div class="scene">
+      <div class="caption" id="caption">🖥️ Computador de mesa</div>
+
+      <!-- ===== COMPUTADOR DE MESA ===== -->
+      <svg id="svgMesa" viewBox="0 0 1000 720" role="img" aria-label="Escritorio con un computador de mesa y sus partes">
+        <rect class="wall" x="0" y="0" width="1000" height="690"/>
+        <rect class="floor" x="0" y="690" width="1000" height="30"/>
+        <rect x="20" y="400" width="960" height="92" rx="10" fill="#D9A066"/>
+        <rect x="20" y="488" width="960" height="32" rx="8" fill="#A96F38"/>
+        <rect x="70" y="518" width="34" height="172" fill="#A96F38"/>
+        <rect x="896" y="518" width="34" height="172" fill="#A96F38"/>
+
+        <g class="part" data-id="cortapicos" tabindex="0" role="button" aria-label="Cortapicos">
+          <rect class="halo" x="344" y="626" width="312" height="72" rx="22" fill="#FFF6C2" stroke="#FFC93C" stroke-width="6" stroke-dasharray="14 10"/>
+          <path d="M270 520 C270 590 400 590 400 648" stroke="#2E3A55" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M490 520 C490 580 460 590 460 648" stroke="#2E3A55" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M720 520 C720 590 520 590 520 648" stroke="#2E3A55" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M860 520 C860 600 580 590 580 648" stroke="#2E3A55" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <rect x="936" y="600" width="40" height="56" rx="6" fill="#FFFFFF" stroke="#1F2A44" stroke-width="3"/>
+          <circle cx="956" cy="628" r="7" fill="#1F2A44"/>
+          <path d="M640 664 C780 664 880 628 950 628" stroke="#2E3A55" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <g class="body">
+            <rect x="360" y="640" width="280" height="44" rx="14" fill="#F4F6F8" stroke="#1F2A44" stroke-width="4"/>
+            <rect x="382" y="650" width="36" height="24" rx="8" fill="#DDE3EA"/><circle cx="394" cy="662" r="3" fill="#1F2A44"/><circle cx="406" cy="662" r="3" fill="#1F2A44"/>
+            <rect x="442" y="650" width="36" height="24" rx="8" fill="#DDE3EA"/><circle cx="454" cy="662" r="3" fill="#1F2A44"/><circle cx="466" cy="662" r="3" fill="#1F2A44"/>
+            <rect x="502" y="650" width="36" height="24" rx="8" fill="#DDE3EA"/><circle cx="514" cy="662" r="3" fill="#1F2A44"/><circle cx="526" cy="662" r="3" fill="#1F2A44"/>
+            <rect x="562" y="650" width="36" height="24" rx="8" fill="#DDE3EA"/><circle cx="574" cy="662" r="3" fill="#1F2A44"/><circle cx="586" cy="662" r="3" fill="#1F2A44"/>
+            <rect x="606" y="648" width="24" height="28" rx="6" fill="#FF6B5B" stroke="#C94A3D" stroke-width="3"/>
+          </g>
+          <rect x="350" y="630" width="300" height="64" fill="transparent"/>
+        </g>
+
+        <g class="part" data-id="impresora" tabindex="0" role="button" aria-label="Impresora">
+          <rect class="halo" x="26" y="246" width="198" height="200" rx="22" fill="#FFF6C2" stroke="#FFC93C" stroke-width="6" stroke-dasharray="14 10"/>
+          <g class="body">
+            <rect x="72" y="262" width="104" height="66" fill="#FFFFFF" stroke="#B8C2CC" stroke-width="3"/>
+            <line x1="86" y1="280" x2="160" y2="280" stroke="#B8C2CC" stroke-width="4"/>
+            <line x1="86" y1="296" x2="146" y2="296" stroke="#B8C2CC" stroke-width="4"/>
+            <rect x="40" y="310" width="170" height="112" rx="18" fill="#3DBE7A"/>
+            <rect x="60" y="332" width="130" height="14" rx="7" fill="#23874F"/>
+            <circle cx="186" cy="372" r="8" fill="#FFC93C"/>
+            <rect x="72" y="398" width="106" height="32" rx="6" fill="#FFFFFF" stroke="#B8C2CC" stroke-width="3"/>
+          </g>
+          <rect x="30" y="250" width="190" height="192" fill="transparent"/>
+        </g>
+
+        <g class="part" data-id="parlantes" tabindex="0" role="button" aria-label="Parlantes">
+          <rect class="halo" x="220" y="258" width="88" height="174" rx="20" fill="#FFF6C2" stroke="#FFC93C" stroke-width="6" stroke-dasharray="14 10"/>
+          <rect class="halo" x="672" y="258" width="88" height="174" rx="20" fill="#FFF6C2" stroke="#FFC93C" stroke-width="6" stroke-dasharray="14 10"/>
+          <g class="body">
+            <rect x="232" y="270" width="64" height="150" rx="14" fill="#7B5CD6"/>
+            <circle cx="264" cy="308" r="15" fill="#4A3596"/><circle cx="264" cy="372" r="24" fill="#4A3596"/><circle cx="264" cy="372" r="9" fill="#B7A6F0"/>
+          </g>
+          <g class="body">
+            <rect x="684" y="270" width="64" height="150" rx="14" fill="#7B5CD6"/>
+            <circle cx="716" cy="308" r="15" fill="#4A3596"/><circle cx="716" cy="372" r="24" fill="#4A3596"/><circle cx="716" cy="372" r="9" fill="#B7A6F0"/>
+          </g>
+          <rect x="224" y="262" width="80" height="166" fill="transparent"/>
+          <rect x="676" y="262" width="80" height="166" fill="transparent"/>
+        </g>
+
+        <g class="part" data-id="monitor" tabindex="0" role="button" aria-label="Monitor">
+          <rect class="halo" x="306" y="96" width="368" height="330" rx="26" fill="#FFF6C2" stroke="#FFC93C" stroke-width="6" stroke-dasharray="14 10"/>
+          <g class="body">
+            <rect x="470" y="356" width="40" height="50" fill="#5A6478"/>
+            <ellipse cx="490" cy="410" rx="72" ry="11" fill="#5A6478"/>
+            <rect x="320" y="110" width="340" height="252" rx="18" fill="#2E3A55"/>
+            <rect x="338" y="128" width="304" height="200" rx="8" fill="#7FD3F7"/>
+            <circle class="eye" cx="440" cy="212" r="13" fill="#1F2A44"/>
+            <circle class="eye" cx="540" cy="212" r="13" fill="#1F2A44"/>
+            <path d="M438 258 Q490 302 542 258" stroke="#1F2A44" stroke-width="9" fill="none" stroke-linecap="round"/>
+            <circle cx="642" cy="346" r="6" fill="#3DBE7A"/>
+          </g>
+          <rect x="310" y="118" width="360" height="304" fill="transparent"/>
+        </g>
+
+        <g class="part" data-id="camara" tabindex="0" role="button" aria-label="Cámara web">
+          <rect class="halo" x="446" y="68" width="88" height="52" rx="22" fill="#FFF6C2" stroke="#FFC93C" stroke-width="6" stroke-dasharray="10 8"/>
+          <g class="body">
+            <rect x="478" y="102" width="24" height="14" rx="3" fill="#2E3A55"/>
+            <rect x="458" y="78" width="64" height="30" rx="15" fill="#2E3A55"/>
+            <circle cx="486" cy="93" r="10" fill="#7FD3F7" stroke="#1F2A44" stroke-width="4"/>
+            <circle cx="486" cy="93" r="4" fill="#1F2A44"/>
+            <circle cx="509" cy="93" r="4" fill="#3DBE7A"/>
+          </g>
+          <rect x="446" y="66" width="88" height="54" fill="transparent"/>
+        </g>
+
+        <g class="part" data-id="torre" tabindex="0" role="button" aria-label="Torre o CPU">
+          <rect class="halo" x="776" y="166" width="168" height="288" rx="24" fill="#FFF6C2" stroke="#FFC93C" stroke-width="6" stroke-dasharray="14 10"/>
+          <g class="body">
+            <rect x="790" y="180" width="140" height="262" rx="14" fill="#FF6B5B"/>
+            <rect x="810" y="208" width="100" height="14" rx="5" fill="#C94A3D"/>
+            <rect x="810" y="234" width="100" height="14" rx="5" fill="#C94A3D"/>
+            <circle cx="860" cy="300" r="19" fill="#FFE08A" stroke="#C94A3D" stroke-width="6"/>
+            <line x1="860" y1="286" x2="860" y2="300" stroke="#C94A3D" stroke-width="5" stroke-linecap="round"/>
+            <line x1="818" y1="360" x2="902" y2="360" stroke="#C94A3D" stroke-width="6" stroke-linecap="round"/>
+            <line x1="818" y1="380" x2="902" y2="380" stroke="#C94A3D" stroke-width="6" stroke-linecap="round"/>
+            <line x1="818" y1="400" x2="902" y2="400" stroke="#C94A3D" stroke-width="6" stroke-linecap="round"/>
+          </g>
+          <rect x="780" y="170" width="160" height="280" fill="transparent"/>
+        </g>
+
+        <g class="part" data-id="teclado" tabindex="0" role="button" aria-label="Teclado">
+          <rect class="halo" x="306" y="424" width="358" height="80" rx="18" fill="#FFF6C2" stroke="#FFC93C" stroke-width="6" stroke-dasharray="14 10"/>
+          <g class="body" id="kbMesa">
+            <rect x="320" y="436" width="330" height="56" rx="10" fill="#FFC93C" stroke="#D9A21E" stroke-width="3"/>
+          </g>
+          <rect x="310" y="428" width="350" height="72" fill="transparent"/>
+        </g>
+
+        <g class="part" data-id="mouse" tabindex="0" role="button" aria-label="Mouse">
+          <rect class="halo" x="684" y="420" width="72" height="84" rx="18" fill="#FFF6C2" stroke="#FFC93C" stroke-width="6" stroke-dasharray="14 10"/>
+          <g class="body">
+            <ellipse cx="720" cy="462" rx="24" ry="32" fill="#FFFFFF" stroke="#2E3A55" stroke-width="4"/>
+            <line x1="720" y1="431" x2="720" y2="456" stroke="#2E3A55" stroke-width="3"/>
+            <rect x="715" y="439" width="10" height="13" rx="5" fill="#FF6B5B"/>
+          </g>
+          <rect x="688" y="424" width="64" height="76" fill="transparent"/>
+        </g>
+      </svg>
+
+      <!-- ===== PORTÁTIL ===== -->
+      <svg id="svgPort" viewBox="0 0 1000 720" role="img" aria-label="Mesa con un portátil y sus partes" style="display:none">
+        <rect class="wall" x="0" y="0" width="1000" height="690"/>
+        <rect class="floor" x="0" y="690" width="1000" height="30"/>
+        <rect x="30" y="596" width="940" height="56" rx="10" fill="#D9A066"/>
+        <rect x="30" y="648" width="940" height="26" rx="8" fill="#A96F38"/>
+        <rect x="80" y="672" width="30" height="18" fill="#A96F38"/>
+        <rect x="890" y="672" width="30" height="18" fill="#A96F38"/>
+
+        <!-- base (no se toca) -->
+        <rect x="250" y="398" width="500" height="22" rx="8" fill="#3E475A"/>
+        <polygon points="250,418 750,418 860,580 140,580" fill="#A7B0C2"/>
+        <polygon points="140,580 860,580 860,598 140,598" fill="#7A8499"/>
+
+        <g class="part" data-id="p_pantalla" tabindex="0" role="button" aria-label="Pantalla del portátil">
+          <rect class="halo" x="236" y="46" width="528" height="366" rx="30" fill="#FFF6C2" stroke="#FFC93C" stroke-width="6" stroke-dasharray="14 10"/>
+          <g class="body">
+            <rect x="250" y="60" width="500" height="340" rx="22" fill="#5A6478"/>
+            <rect x="274" y="94" width="452" height="286" rx="8" fill="#7FD3F7"/>
+            <circle class="eye" cx="440" cy="222" r="14" fill="#1F2A44"/>
+            <circle class="eye" cx="560" cy="222" r="14" fill="#1F2A44"/>
+            <path d="M436 280 Q500 330 564 280" stroke="#1F2A44" stroke-width="10" fill="none" stroke-linecap="round"/>
+          </g>
+          <rect x="240" y="90" width="520" height="318" fill="transparent"/>
+        </g>
+
+        <g class="part" data-id="p_camara" tabindex="0" role="button" aria-label="Cámara web del portátil">
+          <rect class="halo" x="470" y="60" width="62" height="32" rx="16" fill="#FFF6C2" stroke="#FFC93C" stroke-width="5" stroke-dasharray="8 6"/>
+          <g class="body">
+            <circle cx="496" cy="76" r="8" fill="#1F2A44"/>
+            <circle cx="496" cy="76" r="3.5" fill="#7FD3F7"/>
+            <circle cx="514" cy="76" r="3.5" fill="#3DBE7A"/>
+          </g>
+          <rect x="456" y="52" width="88" height="42" fill="transparent"/>
+        </g>
+
+        <g class="part" data-id="p_teclado" tabindex="0" role="button" aria-label="Teclado del portátil">
+          <polygon class="halo" points="290,422 710,422 744,508 256,508" fill="#FFF6C2" stroke="#FFC93C" stroke-width="6" stroke-dasharray="14 10"/>
+          <g class="body" id="kbPort">
+            <polygon points="300,430 700,430 730,500 270,500" fill="#2E3A55"/>
+          </g>
+          <polygon points="296,426 704,426 736,504 264,504" fill="transparent"/>
+        </g>
+
+        <g class="part" data-id="p_parlantes" tabindex="0" role="button" aria-label="Parlantes del portátil">
+          <rect class="halo" x="246" y="436" width="50" height="66" rx="12" fill="#FFF6C2" stroke="#FFC93C" stroke-width="5" stroke-dasharray="8 6"/>
+          <rect class="halo" x="706" y="436" width="50" height="66" rx="12" fill="#FFF6C2" stroke="#FFC93C" stroke-width="5" stroke-dasharray="8 6"/>
+          <g class="body" id="spkL"></g>
+          <g class="body" id="spkR"></g>
+          <rect x="242" y="432" width="56" height="74" fill="transparent"/>
+          <rect x="704" y="432" width="56" height="74" fill="transparent"/>
+        </g>
+
+        <g class="part" data-id="p_bateria" tabindex="0" role="button" aria-label="Batería del portátil">
+          <rect class="halo" x="190" y="504" width="208" height="68" rx="14" fill="#FFF6C2" stroke="#FFC93C" stroke-width="6" stroke-dasharray="14 10"/>
+          <g class="body">
+            <rect x="200" y="514" width="176" height="48" rx="8" fill="#3DBE7A" fill-opacity=".22" stroke="#23874F" stroke-width="3" stroke-dasharray="8 6"/>
+            <rect x="376" y="528" width="10" height="20" rx="3" fill="#23874F"/>
+            <rect x="210" y="522" width="48" height="32" rx="4" fill="#3DBE7A"/>
+            <rect x="264" y="522" width="48" height="32" rx="4" fill="#3DBE7A"/>
+            <rect x="318" y="522" width="48" height="32" rx="4" fill="#3DBE7A" fill-opacity=".45"/>
+          </g>
+          <rect x="194" y="508" width="200" height="60" fill="transparent"/>
+        </g>
+
+        <g class="part" data-id="p_touchpad" tabindex="0" role="button" aria-label="Panel táctil">
+          <polygon class="halo" points="420,504 580,504 594,574 406,574" fill="#FFF6C2" stroke="#FFC93C" stroke-width="6" stroke-dasharray="12 8"/>
+          <g class="body">
+            <polygon points="430,512 570,512 582,566 418,566" fill="#C5CCDA" stroke="#7A8499" stroke-width="3"/>
+            <line x1="421" y1="552" x2="579" y2="552" stroke="#7A8499" stroke-width="3"/>
+            <line x1="500" y1="552" x2="500" y2="566" stroke="#7A8499" stroke-width="3"/>
+          </g>
+          <polygon points="424,506 576,506 590,572 410,572" fill="transparent"/>
+        </g>
+
+        <g class="part" data-id="p_puertos" tabindex="0" role="button" aria-label="Puertos del portátil">
+          <rect class="halo" x="148" y="572" width="126" height="32" rx="12" fill="#FFF6C2" stroke="#FFC93C" stroke-width="5" stroke-dasharray="8 6"/>
+          <g class="body">
+            <rect x="160" y="584" width="28" height="10" rx="2" fill="#1F2A44"/>
+            <rect x="198" y="584" width="28" height="10" rx="2" fill="#1F2A44"/>
+            <circle cx="238" cy="589" r="5" fill="#1F2A44"/>
+            <rect x="250" y="584" width="16" height="10" rx="2" fill="#1F2A44"/>
+          </g>
+          <rect x="144" y="566" width="134" height="42" fill="transparent"/>
+        </g>
+
+        <g class="part" data-id="p_cargador" tabindex="0" role="button" aria-label="Cargador del portátil">
+          <rect class="halo" x="836" y="580" width="140" height="80" rx="16" fill="#FFF6C2" stroke="#FFC93C" stroke-width="6" stroke-dasharray="12 8"/>
+          <path d="M856 590 C826 604 826 626 852 628" stroke="#2E3A55" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M952 628 L1000 628" stroke="#2E3A55" stroke-width="6" fill="none"/>
+          <g class="body">
+            <rect x="852" y="608" width="100" height="40" rx="10" fill="#2E3A55"/>
+            <path d="M896 616 l-8 12 h10 l-6 12" stroke="#FFC93C" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="936" cy="620" r="5" fill="#3DBE7A"/>
+          </g>
+          <rect x="828" y="584" width="150" height="72" fill="transparent"/>
+        </g>
+      </svg>
+    </div>
+
+    <section class="panel" id="panel" aria-live="polite"></section>
+  </main>
+</div>
+<div class="confetti" id="confetti"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const NS="http://www.w3.org/2000/svg";
+function mk(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);parent.appendChild(e);return e}
+
+/* ---------- dibujos generados ---------- */
+(function(){
+  const kb=$('#kbMesa');
+  for(let r=0;r<3;r++)for(let c=0;c<13;c++) mk('rect',{x:330+c*24.2,y:442+r*12,width:19,height:8.5,rx:2,fill:'#FFF3C4'},kb);
+  mk('rect',{x:420,y:478,width:130,height:8,rx:3,fill:'#FFF3C4'},kb);
+  const kp=$('#kbPort');
+  for(let r=0;r<4;r++){
+    const y=436+r*16, lx=300-(y-430)*30/70+8, rx=700+(y-430)*30/70-8, n=14, gap=4, w=(rx-lx-(n-1)*gap)/n;
+    for(let c=0;c<n;c++){
+      if(r===3 && c>=4 && c<=9){ if(c===4) mk('rect',{x:lx+4*(w+gap),y,width:6*w+5*gap,height:11,rx:2,fill:'#DDE3EA'},kp); continue; }
+      mk('rect',{x:lx+c*(w+gap),y,width:w,height:11,rx:2,fill:'#DDE3EA'},kp);
+    }
+  }
+  [['#spkL',[258,270,282]],['#spkR',[718,730,742]]].forEach(([id,xs])=>{
+    const g=$(id); xs.forEach(x=>{for(let i=0;i<5;i++) mk('circle',{cx:x,cy:446+i*11,r:3.2,fill:'#4A5468'},g)});
+  });
+})();
+
+/* ---------- datos ---------- */
+const PARTS={
+  monitor:{scene:'mesa',name:'Monitor',emoji:'🖥️',art:'el monitor',say:'Es la pantalla. Nos muestra letras, dibujos y videos.',care:'Lo limpio con un paño suave y no lo toco con los dedos.'},
+  camara:{scene:'mesa',name:'Cámara web',emoji:'📷',art:'la cámara web',say:'Es un ojito que graba video. Con ella hacemos videollamadas.',care:'La tapo cuando no la estoy usando.'},
+  torre:{scene:'mesa',name:'Torre (CPU)',spoken:'Torre',emoji:'🧠',art:'la torre',say:'Es el cerebro del computador. Piensa y guarda todo.',care:'No la golpeo y no pongo comida cerca.'},
+  teclado:{scene:'mesa',name:'Teclado',emoji:'⌨️',art:'el teclado',say:'Tiene letras y números. Con él escribimos.',care:'Lo toco con manos limpias y con suavidad.'},
+  mouse:{scene:'mesa',name:'Mouse',emoji:'🖱️',art:'el mouse',say:'Lo movemos con la mano para señalar y hacer clic.',care:'Lo muevo despacio sobre la mesa.'},
+  parlantes:{scene:'mesa',name:'Parlantes',emoji:'🔊',art:'los parlantes',say:'Por aquí sale el sonido y la música.',care:'Uso un volumen bajito para cuidar mis oídos.'},
+  impresora:{scene:'mesa',name:'Impresora',emoji:'🖨️',art:'la impresora',say:'Pasa lo que vemos en la pantalla a una hoja de papel.',care:'Imprimo solo lo necesario para cuidar el planeta.'},
+  cortapicos:{scene:'mesa',name:'Cortapicos',emoji:'🛡️',art:'el cortapicos',say:'Es una regleta con enchufes. Protege el computador cuando la luz sube de golpe.',care:'Nunca lo toco con las manos mojadas.'},
+  p_pantalla:{scene:'portatil',name:'Pantalla',emoji:'💻',art:'la pantalla',say:'Nos muestra todo, como el monitor. Se cierra como un libro.',care:'La cierro despacio y sin nada encima del teclado.'},
+  p_camara:{scene:'portatil',name:'Cámara web',emoji:'📷',art:'la cámara web',say:'Es un puntito arriba de la pantalla. Nos deja ver a otras personas en videollamadas.',care:'Pido permiso antes de tomar una foto.'},
+  p_teclado:{scene:'portatil',name:'Teclado',emoji:'⌨️',art:'el teclado',say:'Viene pegado al portátil. Con él escribimos.',care:'No como encima del portátil.'},
+  p_touchpad:{scene:'portatil',name:'Panel táctil',emoji:'👆',art:'el panel táctil',say:'Es el mouse del portátil. Lo tocamos con el dedo para mover la flecha.',care:'Lo toco con un dedo limpio.'},
+  p_parlantes:{scene:'portatil',name:'Parlantes',emoji:'🔊',art:'los parlantes',say:'Son unos huequitos por donde sale el sonido.',care:'Uso un volumen bajito.'},
+  p_bateria:{scene:'portatil',name:'Batería',emoji:'🔋',art:'la batería',say:'Está escondida adentro. Guarda energía para usar el portátil sin cable.',care:'La cargo cuando se está acabando.'},
+  p_puertos:{scene:'portatil',name:'Puertos',emoji:'🔗',art:'los puertos',say:'Son huequitos para conectar cosas, como una memoria USB.',care:'Conecto las cosas con cuidado, sin forzar.'},
+  p_cargador:{scene:'portatil',name:'Cargador',emoji:'🔌',art:'el cargador',say:'Lleva la energía del enchufe a la batería del portátil.',care:'Lo desconecto del enchufe, nunca jalando el cable.'}
+};
+const ids=s=>Object.keys(PARTS).filter(k=>PARTS[k].scene===s);
+const spokenName=id=>PARTS[id].spoken||PARTS[id].name;
+function thatIs(id){const a=PARTS[id].art; return a.startsWith('los ')?`Esos son ${a}`:a.startsWith('la ')?`Esa es ${a}`:`Ese es ${a}`}
+
+const RIDDLES=[
+  {t:'teclado',q:'Tengo muchas letras y números. Con mis teclas escribes. ¿Quién soy?'},
+  {t:'torre',q:'Soy la caja que piensa. Soy el cerebro del computador de mesa. ¿Quién soy?'},
+  {t:'impresora',q:'Saco tus dibujos en una hoja de papel. ¿Quién soy?'},
+  {t:'camara',q:'Soy un ojito arriba del monitor. Te veo en las videollamadas. ¿Quién soy?'},
+  {t:'cortapicos',q:'Estoy en el piso. Protejo el computador cuando la luz sube de golpe. ¿Quién soy?'},
+  {t:'parlantes',q:'Somos dos cajitas moradas. Por nosotros sale la música. ¿Quiénes somos?'},
+  {t:'p_touchpad',q:'Soy el mouse del portátil. Me tocas con el dedo. ¿Quién soy?'},
+  {t:'p_bateria',q:'Estoy escondida adentro. Guardo energía para usar el portátil sin cable. ¿Quién soy?'},
+  {t:'p_cargador',q:'Llevo la energía del enchufe al portátil. ¿Quién soy?'},
+  {t:'p_puertos',q:'Soy un huequito. Aquí conectas una memoria USB. ¿Quién soy?'}
+];
+const USO=[
+  {e:'✏️',q:'Quiero escribir mi nombre',a:'teclado',o:['teclado','impresora','parlantes']},
+  {e:'🎵',q:'Quiero escuchar una canción',a:'parlantes',o:['parlantes','teclado','camara']},
+  {e:'🎬',q:'Quiero ver un video',a:'monitor',o:['monitor','mouse','cortapicos']},
+  {e:'👵',q:'Quiero hablar con la abuela por videollamada',a:'camara',o:['camara','impresora','p_bateria']},
+  {e:'🎮',q:'Quiero hacer clic en un juego',a:'mouse',o:['mouse','parlantes','p_cargador']},
+  {e:'🎨',q:'Quiero tener mi dibujo en papel',a:'impresora',o:['impresora','camara','teclado']},
+  {e:'🪫',q:'Al portátil se le acabó la energía',a:'p_cargador',o:['p_cargador','mouse','monitor']},
+  {e:'💾',q:'Quiero conectar una memoria USB',a:'p_puertos',o:['p_puertos','parlantes','p_pantalla']},
+  {e:'⚡',q:'Quiero proteger el computador si la luz sube de golpe',a:'cortapicos',o:['cortapicos','teclado','camara']}
+];
+const CUAL_OPTS=[{v:'mesa',e:'🖥️',l:'De mesa'},{v:'portatil',e:'💻',l:'Portátil'},{v:'dos',e:'✨',l:'Los dos'}];
+const CUAL=[
+  {e:'🧠',q:'La torre (CPU)',a:'mesa',why:'La torre solo la tiene el computador de mesa. El portátil guarda su cerebro por dentro.'},
+  {e:'👆',q:'El panel táctil',a:'portatil',why:'El panel táctil es el mouse del portátil.'},
+  {e:'⌨️',q:'El teclado',a:'dos',why:'Los dos tienen teclado para escribir.'},
+  {e:'🔋',q:'Funciona sin cable gracias a su batería',a:'portatil',why:'El portátil tiene batería. Por eso lo podemos usar sin cable.'},
+  {e:'📖',q:'Se cierra como un libro',a:'portatil',why:'La pantalla del portátil se cierra sobre el teclado.'},
+  {e:'📷',q:'La cámara web',a:'dos',why:'Los dos pueden tener cámara web para videollamadas.'},
+  {e:'🎒',q:'Lo puedo llevar en la maleta',a:'portatil',why:'El portátil es liviano y se puede llevar a otros lugares.'},
+  {e:'🔌',q:'Necesita estar siempre conectado al enchufe',a:'mesa',why:'El computador de mesa no tiene batería. Siempre necesita el enchufe.'},
+  {e:'🔊',q:'Los parlantes',a:'dos',why:'Los dos tienen parlantes para escuchar sonidos.'}
+];
+const CUIDO_OPTS=[{v:true,e:'👍',l:'Bien hecho'},{v:false,e:'👎',l:'No se hace'}];
+const CUIDO=[
+  {e:'🧼',q:'Me lavo las manos antes de usar el computador',a:true,why:'¡Sí! Las manos limpias cuidan el teclado y el mouse.'},
+  {e:'🍪',q:'Como galletas encima del teclado',a:false,why:'Las migas se meten entre las teclas y lo dañan.'},
+  {e:'🥤',q:'Pongo el vaso de agua lejos del computador',a:true,why:'¡Muy bien! El agua daña el computador.'},
+  {e:'💧',q:'Toco el cortapicos con las manos mojadas',a:false,why:'¡Peligro! El agua y la electricidad no se juntan.'},
+  {e:'💻',q:'Cierro el portátil despacio',a:true,why:'¡Sí! Así cuidamos la pantalla.'},
+  {e:'🔌',q:'Jalo el cable del cargador para desconectarlo',a:false,why:'El cable se puede romper. Se saca desde el enchufe.'},
+  {e:'🙋',q:'Pido ayuda a un adulto si algo no funciona',a:true,why:'¡Excelente! Pedir ayuda es lo correcto.'},
+  {e:'😠',q:'Golpeo el teclado cuando me enojo',a:false,why:'Si me enojo, respiro profundo. El teclado se puede dañar.'},
+  {e:'📷',q:'Tapo la cámara cuando no la uso',a:true,why:'¡Muy bien! Así cuidamos nuestra privacidad.'},
+  {e:'📢',q:'Pongo el volumen muy, muy fuerte',a:false,why:'El volumen fuerte lastima los oídos. Mejor bajito.'}
+];
+
+const MISSIONS=[
+  {id:'exMesa',emoji:'🖥️',title:'Explora el computador de mesa',type:'explore',scene:'mesa'},
+  {id:'exPort',emoji:'💻',title:'Explora el portátil',type:'explore',scene:'portatil'},
+  {id:'findMesa',emoji:'🎯',title:'¿Dónde está? En el computador de mesa',type:'find',scene:'mesa',max:8},
+  {id:'findPort',emoji:'🎯',title:'¿Dónde está? En el portátil',type:'find',scene:'portatil',max:8},
+  {id:'riddle',emoji:'🤔',title:'Adivinanzas',type:'riddle',max:RIDDLES.length},
+  {id:'uso',emoji:'🧩',title:'¿Qué uso para…?',type:'uso',max:USO.length},
+  {id:'cual',emoji:'⚖️',title:'¿De mesa o portátil?',type:'cual',max:CUAL.length},
+  {id:'cuido',emoji:'💚',title:'Cuido el computador',type:'cuido',max:CUIDO.length}
+];
+
+/* ---------- estado guardado ---------- */
+const KEY='conoce-computador-g1-v2';
+function fresh(){return {done:{},stars:{},name:''}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.done&&s.stars) return s;}catch(e){} return fresh()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+let state=load();
+const totalStars=()=>Object.values(state.stars).reduce((a,b)=>a+b,0);
+const doneCount=()=>MISSIONS.filter(m=>state.done[m.id]).length;
+function paintStars(){$('#starcount').textContent='⭐ '+totalStars()}
+
+/* ---------- sonido y voz ---------- */
+let soundOn=true, esVoice=null, speakToken=0, actx=null;
+function pickVoice(){ if(!('speechSynthesis' in window)) return; const v=speechSynthesis.getVoices();
+  esVoice=v.find(x=>x.lang==='es-CO')||v.find(x=>x.lang==='es-MX')||v.find(x=>x.lang==='es-US')||v.find(x=>x.lang&&x.lang.startsWith('es'))||null; }
+if('speechSynthesis' in window){pickVoice(); speechSynthesis.onvoiceschanged=pickVoice;}
+function speak(t,cb){
+  const my=++speakToken; let fired=false;
+  const done=()=>{ if(fired||my!==speakToken) return; fired=true; cb&&cb(); };
+  if(!soundOn||!('speechSynthesis' in window)){ if(cb) setTimeout(done,1400); return; }
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(t);
+    u.lang=esVoice?esVoice.lang:'es-ES'; if(esVoice) u.voice=esVoice;
+    u.rate=.88; u.pitch=1.1; u.onend=done; u.onerror=()=>{};
+    speechSynthesis.speak(u);
+    if(cb) setTimeout(done,1800+t.length*85);
+  }catch(e){ if(cb) setTimeout(done,1400); }
+}
+function hush(){speakToken++; if('speechSynthesis' in window) try{speechSynthesis.cancel()}catch(e){}}
+function tone(freqs,type){
+  if(!soundOn) return;
+  try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); const t=actx.currentTime;
+    freqs.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain(); o.type=type||'sine'; o.frequency.value=f;
+      const s=t+i*.11; g.gain.setValueAtTime(.0001,s); g.gain.exponentialRampToValueAtTime(.16,s+.02); g.gain.exponentialRampToValueAtTime(.0001,s+.24);
+      o.connect(g); g.connect(actx.destination); o.start(s); o.stop(s+.28);});
+  }catch(e){}
+}
+const ding=()=>tone([660,880,1175]), oops=()=>tone([330,247],'triangle');
+$('#bSound').onclick=()=>{ soundOn=!soundOn; const b=$('#bSound'); b.textContent=soundOn?'🔊 Sonido: sí':'🔇 Sonido: no'; b.setAttribute('aria-pressed',soundOn); if(!soundOn) hush(); };
+
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const box=$('#confetti'), cols=['#FFC93C','#FF6B5B','#3DBE7A','#7B5CD6','#7FD3F7'];
+  for(let i=0;i<70;i++){const p=document.createElement('i'); p.style.left=Math.random()*100+'vw'; p.style.background=cols[i%cols.length];
+    p.style.animationDelay=(Math.random()*.5)+'s'; p.style.animationDuration=(1.4+Math.random()*1.3)+'s'; box.appendChild(p);}
+  setTimeout(()=>box.innerHTML='',3400);
+}
+
+/* ---------- escena ---------- */
+const groups={}; document.querySelectorAll('.part').forEach(g=>groups[g.dataset.id]=g);
+const CHECK={impresora:[208,262],parlantes:[292,274],monitor:[656,122],camara:[528,76],torre:[926,184],teclado:[646,432],mouse:[744,428],cortapicos:[638,640],
+  p_pantalla:[744,66],p_camara:[540,62],p_teclado:[722,428],p_parlantes:[250,440],p_touchpad:[588,510],p_bateria:[394,512],p_puertos:[272,576],p_cargador:[958,600]};
+Object.keys(CHECK).forEach(id=>{const [x,y]=CHECK[id]; const g=mk('g',{class:'check'},groups[id]);
+  mk('circle',{cx:x,cy:y,r:17,fill:'#3DBE7A',stroke:'#1F2A44','stroke-width':3},g);
+  mk('path',{d:`M${x-8} ${y} l6 6 l11 -12`,stroke:'#fff','stroke-width':5,fill:'none','stroke-linecap':'round','stroke-linejoin':'round'},g);});
+function setScene(s){ $('#svgMesa').style.display=s==='mesa'?'block':'none'; $('#svgPort').style.display=s==='portatil'?'block':'none';
+  $('#caption').textContent=s==='mesa'?'🖥️ Computador de mesa':'💻 Portátil'; }
+function layout(withScene){ $('#main').className=withScene?'withscene':'full'; }
+function clearMarks(all){ Object.values(groups).forEach(g=>{g.classList.remove('sel','no'); if(all) g.classList.remove('seen');}); }
+function replay(el,cls){ el.classList.remove(cls); void el.getBBox(); el.classList.add(cls); }
+let onTap=null;
+Object.keys(groups).forEach(id=>{ const g=groups[id];
+  g.addEventListener('click',()=>onTap&&onTap(id));
+  g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault(); onTap&&onTap(id);}}); });
+
+const panel=$('#panel');
+const shuffle=a=>{a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]} return a};
+let run=0; // invalida temporizadores al cambiar de pantalla
+function later(fn,ms){const my=run; setTimeout(()=>{ if(my===run) fn(); },ms)}
+
+/* ---------- mapa ---------- */
+function showMap(){
+  run++; hush(); onTap=null; layout(false); clearMarks(true);
+  const nextIdx=MISSIONS.findIndex(m=>!state.done[m.id]);
+  const all=doneCount()===MISSIONS.length;
+  panel.innerHTML=`
+    <div class="maphead">
+      <div><h2>Tus misiones</h2><p class="small">Cumple las 8 misiones en orden y gana tu diploma.</p></div>
+      <p class="hint" style="margin:0"><b>${doneCount()} de 8</b> cumplidas</p>
+    </div>
+    <div class="missions">
+      ${MISSIONS.map((m,i)=>{
+        const d=state.done[m.id];
+        const st=d?(m.max?`✅ Cumplida, ⭐ ${state.stars[m.id]||0} de ${m.max}`:'✅ Cumplida'):(i===nextIdx?'👉 Sigue aquí':'Sin empezar');
+        return `<button class="mcard ${d?'done':''} ${i===nextIdx?'next':''}" data-m="${i}">
+          <span class="num">${i+1}</span><span class="me">${m.emoji}</span><span class="mt">${m.title}</span><span class="ms">${st}</span></button>`;
+      }).join('')}
+      <button class="mcard prize ${all?'':'locked'}" id="prize" ${all?'':'aria-disabled="true"'}>
+        <span class="num">🏆</span><span class="me">📜</span><span class="mt">Mi diploma</span><span class="ms">${all?'¡Ya lo ganaste!':'🔒 Se abre al cumplir las 8'}</span></button>
+    </div>
+    <button class="reset" id="reset">Borrar el progreso para un nuevo estudiante</button>`;
+  panel.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>startMission(+b.dataset.m));
+  $('#prize').onclick=()=>{ if(doneCount()===MISSIONS.length) showDiploma(); else speak('Primero cumple las ocho misiones. ¡Tú puedes!'); };
+  const r=$('#reset'); r.onclick=()=>{ if(r.dataset.sure){ state=fresh(); save(); paintStars(); showMap(); } else { r.dataset.sure=1; r.textContent='¿Seguro? Toca otra vez para borrar'; } };
+}
+$('#bMap').onclick=showMap;
+
+function startMission(i){
+  run++; hush(); clearMarks(true);
+  const m=MISSIONS[i];
+  ({explore:runExplore,find:runFind,riddle:runRiddle,uso:runUso,cual:runCual,cuido:runCuido})[m.type](m,i);
+}
+function finishMission(i,stars){
+  run++; onTap=null;
+  const m=MISSIONS[i];
+  state.done[m.id]=true;
+  if(m.max) state.stars[m.id]=Math.max(state.stars[m.id]||0,stars);
+  save(); paintStars(); confetti(); ding();
+  const next=MISSIONS.findIndex(x=>!state.done[x.id]);
+  const all=next===-1;
+  layout(false);
+  panel.innerHTML=`<div class="qcard">
+    <div class="qemoji">🏅</div>
+    <h2 class="pname">¡Misión cumplida!</h2>
+    <p class="say">${m.title}</p>
+    ${m.max?`<div class="stars">${'⭐'.repeat(stars)}${'☆'.repeat(m.max-stars)}</div><p class="say">Ganaste ${stars} de ${m.max} estrellas.</p>`:''}
+    <div class="row" style="justify-content:center">
+      ${all?`<button class="btn sun" id="goD">📜 Ver mi diploma</button>`:`<button class="btn" id="goN">▶️ Siguiente misión</button>`}
+      <button class="btn alt" id="goR">🔁 Repetir</button>
+      <button class="btn alt" id="goM">🗺️ Misiones</button>
+    </div></div>`;
+  speak(all?'¡Increíble! Cumpliste todas las misiones. Ganaste tu diploma.':`¡Misión cumplida!${m.max?` Ganaste ${stars} estrellas.`:''}`);
+  if(all) $('#goD').onclick=showDiploma; else $('#goN').onclick=()=>startMission(next);
+  $('#goR').onclick=()=>startMission(i); $('#goM').onclick=showMap;
+}
+function header(i,extra){ return `<p class="small">Misión ${i+1} de 8: ${MISSIONS[i].title}${extra?`. ${extra}`:''}</p>`; }
+
+/* ---------- misión: explorar ---------- */
+function runExplore(m,i){
+  layout(true); setScene(m.scene);
+  const list=ids(m.scene), seen=new Set();
+  const dots=()=>`<div class="progress">${list.map(id=>`<span class="dot ${seen.has(id)?'on':''}">${seen.has(id)?'✓':''}</span>`).join('')}<span>Conoces ${seen.size} de ${list.length}</span></div>`;
+  panel.innerHTML=`${header(i)}<div class="emoji">👆</div>
+    <p class="hint"><b>Toca cada parte del ${m.scene==='mesa'?'computador de mesa':'portátil'}</b> para saber cómo se llama y para qué sirve.</p>
+    <p class="small">Busca las ${list.length} partes. Algunas son muy pequeñitas. 🔎</p>${dots()}`;
+  speak(`Toca cada parte del ${m.scene==='mesa'?'computador de mesa':'portátil'}. Busca las ${list.length} partes.`);
+  onTap=id=>{
+    if(PARTS[id].scene!==m.scene) return;
+    const p=PARTS[id];
+    clearMarks(false); replay(groups[id],'sel');
+    seen.add(id); groups[id].classList.add('seen');
+    const allSeen=seen.size===list.length;
+    panel.innerHTML=`${header(i)}<div class="emoji">${p.emoji}</div><h2 class="pname">${p.name}</h2>
+      <p class="say">${p.say}</p><p class="care"><b>Yo lo cuido:</b> ${p.care}</p>
+      <div class="row"><button class="btn alt" id="listen">🔊 Escuchar otra vez</button>${allSeen?`<button class="btn" id="fin">✅ Terminar misión</button>`:''}</div>${dots()}`;
+    const text=`${spokenName(id)}. ${p.say} ${p.care}`;
+    $('#listen').onclick=()=>speak(text);
+    if(allSeen){ $('#fin').onclick=()=>finishMission(i,0); speak(text+' ¡Ya conoces todas las partes!'); }
+    else speak(text);
+  };
+}
+
+/* ---------- misiones: tocar en la escena ---------- */
+function runTapGame(i,rounds,render){
+  layout(true);
+  let k=0, stars=0, missed=false, busy=false;
+  function next(){
+    clearMarks(false); busy=false; missed=false;
+    if(k>=rounds.length) return finishMission(i,stars);
+    const r=rounds[k]; setScene(PARTS[r.t].scene);
+    panel.innerHTML=`${header(i,`Pregunta ${k+1} de ${rounds.length}`)}${render(r)}
+      <p class="feedback" id="fb"></p><div class="stars">${'⭐'.repeat(stars)}</div>
+      <div class="row"><button class="btn alt" id="again">🔊 Repetir</button></div>`;
+    $('#again').onclick=()=>{ if(!busy) speak(r.speak); };
+    speak(r.speak);
+  }
+  onTap=id=>{
+    if(busy) return; const r=rounds[k]; const fb=$('#fb');
+    if(PARTS[id].scene!==PARTS[r.t].scene) return;
+    if(id===r.t){
+      busy=true; if(!missed) stars++; ding(); replay(groups[id],'sel');
+      fb.className='feedback good'; fb.textContent=`¡Muy bien! 🎉 ${thatIs(id)}.`;
+      panel.querySelector('.stars').textContent='⭐'.repeat(stars);
+      $('#again').disabled=true;
+      speak(`¡Muy bien! ${thatIs(id)}.`,()=>later(()=>{k++; next();},400));
+    }else{
+      missed=true; oops(); replay(groups[id],'no');
+      fb.className='feedback try'; fb.textContent=`${thatIs(id)}. ¡Intenta otra vez!`;
+      speak(`${thatIs(id)}. ¡Intenta otra vez!`);
+    }
+  };
+  next();
+}
+function runFind(m,i){
+  setScene(m.scene);
+  const rounds=shuffle(ids(m.scene)).map(t=>({t,speak:`Toca ${PARTS[t].art}.`}));
+  runTapGame(i,rounds,r=>`<p class="hint">Busca y toca:</p><div class="target">${PARTS[r.t].emoji} ${PARTS[r.t].name.replace(' (CPU)','')}</div>`);
+}
+function runRiddle(m,i){
+  const mesa=shuffle(RIDDLES.filter(r=>PARTS[r.t].scene==='mesa')), port=shuffle(RIDDLES.filter(r=>PARTS[r.t].scene==='portatil'));
+  const mixed=[]; while(mesa.length||port.length){ if(mesa.length) mixed.push(mesa.shift()); if(mesa.length) mixed.push(mesa.shift()); if(port.length) mixed.push(port.shift()); }
+  const rounds=mixed.map(r=>({t:r.t,q:r.q,speak:r.q}));
+  runTapGame(i,rounds,r=>`<span class="where">${PARTS[r.t].scene==='mesa'?'🖥️ Busca en el computador de mesa':'💻 Busca en el portátil'}</span>
+    <div class="emoji">🤔</div><p class="riddle">${r.q}</p>`);
+}
+
+/* ---------- misiones: escoger una opción ---------- */
+function runChoice(i,items,getOpts,question,spokenQ,getWhy){
+  layout(false);
+  let k=0, stars=0, missed=false, locked=false;
+  function next(){
+    missed=false; locked=false;
+    if(k>=items.length) return finishMission(i,stars);
+    const it=items[k], opts=getOpts(it);
+    panel.innerHTML=`<div class="qcard">${header(i,`Pregunta ${k+1} de ${items.length}`)}
+      <div class="qemoji">${it.e}</div><p class="qtext">${question(it)}</p>
+      <div class="choices">${opts.map((o,j)=>`<button class="choice" data-j="${j}"><span class="ce">${o.e}</span>${o.l}</button>`).join('')}</div>
+      <p class="feedback" id="fb"></p><p class="why" id="why"></p>
+      <div class="stars">${'⭐'.repeat(stars)}</div>
+      <div class="row" style="justify-content:center"><button class="btn alt" id="again">🔊 Repetir</button><button class="btn" id="nx" hidden>➡️ Siguiente</button></div></div>`;
+    $('#again').onclick=()=>speak(spokenQ(it,opts));
+    $('#nx').onclick=()=>{k++; next();};
+    panel.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{
+      if(locked) return; const o=opts[+b.dataset.j]; const fb=$('#fb');
+      if(o.v===it.a){
+        locked=true; if(!missed) stars++; ding(); b.classList.add('right');
+        panel.querySelectorAll('.choice').forEach(x=>{ if(x!==b) x.disabled=true; });
+        fb.className='feedback good'; fb.textContent='¡Muy bien! 🎉';
+        const w=getWhy(it); $('#why').textContent=w;
+        panel.querySelector('.stars').textContent='⭐'.repeat(stars);
+        $('#nx').hidden=false; $('#nx').focus();
+        speak(`¡Muy bien! ${w}`);
+      }else{
+        missed=true; oops(); b.disabled=true; b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong');
+        fb.className='feedback try'; fb.textContent='¡Casi! Intenta otra vez.';
+        speak('¡Casi! Intenta otra vez.');
+      }
+    });
+    speak(spokenQ(it,opts));
+  }
+  next();
+}
+function runUso(m,i){
+  runChoice(i,shuffle(USO),
+    it=>shuffle(it.o).map(id=>({v:id,e:PARTS[id].emoji,l:PARTS[id].name.replace(' (CPU)','')})),
+    it=>`${it.q}. ¿Qué uso?`,
+    (it,opts)=>`${it.q}. ¿Qué uso? ¿${opts.map(o=>o.l).join(', o ')}?`,
+    it=>`${PARTS[it.a].name.replace(' (CPU)','')}: ${PARTS[it.a].say}`);
+}
+function runCual(m,i){
+  runChoice(i,shuffle(CUAL),()=>CUAL_OPTS,
+    it=>it.q,
+    it=>`${it.q}. ¿Es del computador de mesa, del portátil, o de los dos?`,
+    it=>it.why);
+}
+function runCuido(m,i){
+  runChoice(i,shuffle(CUIDO),()=>CUIDO_OPTS,
+    it=>it.q,
+    it=>`${it.q}. ¿Está bien hecho, o no se hace?`,
+    it=>it.why);
+}
+
+/* ---------- diploma ---------- */
+function showDiploma(){
+  run++; hush(); onTap=null; layout(false);
+  const date=new Date().toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'});
+  const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  panel.innerHTML=`<div class="qcard">
+    <p class="hint"><b>Escribe tu nombre</b> para tu diploma:</p>
+    <div class="namebox"><input id="nm" maxlength="40" autocomplete="off" value="${esc(state.name||'')}" aria-label="Tu nombre"><button class="btn alt" id="goM">🗺️ Misiones</button></div>
+    <div class="diploma">
+      <div style="font-size:64px;line-height:1">🏆</div>
+      <div class="big">Diploma de experto en computadores</div>
+      <p style="margin:6px 0 0;font-size:22px">Se entrega con orgullo a</p>
+      <div class="nm" id="dn">${esc(state.name||'') || '&nbsp;'}</div>
+      <p style="font-size:22px;margin:0 0 10px">por conocer las partes del computador de mesa y del portátil, y aprender a cuidarlos.</p>
+      <div style="font-size:30px;font-weight:700">⭐ ${totalStars()} estrellas</div>
+      <p style="font-size:18px;margin:10px 0 0">Clase de Tecnología de grado 1, GI School. ${date}</p>
+    </div></div>`;
+  const nm=$('#nm');
+  nm.oninput=()=>{ state.name=nm.value; save(); $('#dn').innerHTML=esc(nm.value)||'&nbsp;'; };
+  $('#goM').onclick=showMap;
+  confetti(); ding();
+  speak('¡Felicitaciones! Eres experto en computadores. Escribe tu nombre en el diploma.');
+}
+
+paintStars();
+showMap();
+</script>
+</body>
+</html>
