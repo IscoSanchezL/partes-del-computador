@@ -144,6 +144,7 @@ main.full .scene{display:none}
     <div class="tools">
       <span class="starcount" id="starcount" aria-label="Estrellas">⭐ 0</span>
       <button class="tab" id="bMap">🗺️ Misiones</button>
+      <button class="tab" id="bNew" title="Borra todo el avance para el siguiente grupo">🔄 Nueva clase</button>
       <button class="tab" id="bSound" aria-pressed="true">🔊 Sonido: sí</button>
     </div>
   </header>
@@ -485,8 +486,10 @@ const MISSIONS=[
 /* ---------- estado guardado ---------- */
 const KEY='conoce-computador-g1-v2';
 function fresh(){return {done:{},stars:{},name:''}}
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.done&&s.stars) return s;}catch(e){} return fresh()}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+// El progreso vive solo mientras la página está abierta: no se guarda en el navegador.
+try{ localStorage.removeItem(KEY); localStorage.removeItem('conoce-computador-g1'); }catch(e){} // borra lo que quedó guardado antes
+function load(){ return fresh(); }
+function save(){}
 let state=load();
 const totalStars=()=>Object.values(state.stars).reduce((a,b)=>a+b,0);
 const doneCount=()=>MISSIONS.filter(m=>state.done[m.id]).length;
@@ -752,7 +755,7 @@ function drawDiploma(cv,name){
   if(LOGO.complete && LOGO.naturalWidth){ const h=210, w=h*LOGO.naturalWidth/LOGO.naturalHeight; c.drawImage(LOGO,100,92,w,h); }
   c.textBaseline='alphabetic'; c.fillStyle='#1F2A44';
   c.font=`700 118px ${F}`; c.fillText('Diploma',W/2,215);
-  c.fillStyle='#1F3E7C'; c.font=`700 52px ${F}`; c.fillText('Explorador del computador',W/2,300);
+  c.fillStyle='#1F3E7C'; c.font=`700 52px ${F}`; c.fillText('de explorador del computador, nivel 1',W/2,300);
   c.fillStyle='#1F2A44'; c.font=`400 40px ${F}`; c.fillText('Se entrega con orgullo a',W/2,410);
   // espacio del nombre
   c.strokeStyle='#1F2A44'; c.lineWidth=4; c.beginPath(); c.moveTo(300,560); c.lineTo(W-300,560); c.stroke();
@@ -810,11 +813,22 @@ function showDiploma(){
   };
   $('#goM').onclick=showMap;
   confetti(); ding();
-  speak('¡Felicitaciones! Ya eres explorador del computador. Escribe tu nombre y descarga tu diploma.');
+  speak('¡Felicitaciones! Ya eres explorador del computador, nivel uno. Escribe tu nombre y descarga tu diploma.');
 }
 
 paintStars();
 showMap();
+
+/* ---------- nueva clase: borrar todo el avance ---------- */
+function newClass(){
+  if(!confirm("¿Terminar la clase?\n\nSe borrará todo el avance (misiones, estrellas y diploma) para el siguiente grupo.")) return;
+  try{ if('speechSynthesis' in window) speechSynthesis.cancel(); }catch(e){}
+  try{ localStorage.clear(); sessionStorage.clear(); }catch(e){}
+  location.replace(location.pathname+'?nueva='+Date.now());
+}
+$('#bNew').onclick=newClass;
+window.addEventListener('pageshow',e=>{ if(e.persisted) location.reload(); });
+if(location.search.includes('nueva=')) history.replaceState(null,'',location.pathname);
 </script>
 </body>
 </html>
